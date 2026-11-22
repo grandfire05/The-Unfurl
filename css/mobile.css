@@ -1,0 +1,217 @@
+/* 모바일(세로) 전용 레이아웃: body.mobile 일 때만 적용. 무대 540×1170. */
+body.mobile #stage { width: 540px; height: 1170px; border-radius: 0; box-shadow: none; }
+body.mobile #perf { top: auto; bottom: 2px; right: 2px; font-size: 9px; padding: 1px 5px; gap: 6px; opacity: .6; }
+
+/* ---- 위(이름·재화·아이콘) + 가운데(화면) + 아래(탭) ---- */
+body.mobile #tabs { position: absolute; inset: 0; height: auto; display: block; padding: 0; background: transparent; border: 0; pointer-events: none; z-index: 30; }
+body.mobile #tabs > * { pointer-events: auto; }
+body.mobile .tb-row { position: absolute; left: 0; right: 0; top: 0; height: 56px; padding: 0 10px; background: #0d0f17; border-bottom: 1px solid #2b3047; display: flex; align-items: center; gap: 8px; }
+body.mobile .tb-name { font-size: 16px; margin-right: 0; max-width: 150px; }
+body.mobile .tb-name small { font-size: 12px; }
+body.mobile .tb-row .strip { display: none; }
+body.mobile .tb-res { gap: 10px; margin-right: 0; font-size: 14px; }
+body.mobile .top-icons { position: static; gap: 6px; }
+body.mobile .ibtn { width: 38px; height: 38px; }
+body.mobile .tb-tabs { position: fixed; left: 0; right: 0; bottom: 0; height: 68px; width: 540px; margin: 0; background: #0d0f17; border-top: 1px solid #2b3047; display: flex; z-index: 40; }
+body.mobile .tb-tabs .tab { flex: 1; flex-direction: column; gap: 2px; font-size: 12px; padding: 6px 0 4px; justify-content: center; }
+body.mobile .tb-tabs .tab .ico { width: 24px; height: 24px; }
+body.mobile .tb-tabs .tab kbd { display: none; }
+body.mobile .tb-tabs .tab .dot { position: absolute; left: auto; right: calc(50% - 26px); top: 4px; }
+body.mobile .tb-sub { top: 56px; height: 44px; padding: 0 10px; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+body.mobile .tb-sub .tb-path, body.mobile .tb-sub .tb-hint, body.mobile .tb-sub kbd { display: none; }
+body.mobile .tb-sub .pill { padding: 6px 16px; font-size: 14px; white-space: nowrap; flex: none; }
+body.mobile #screen { bottom: 68px !important; }
+body.mobile .tb-hint { display: none; }
+
+/* ---- 채팅: 탭 위쪽에 둔다 ---- */
+body.mobile #chat { left: 8px !important; bottom: 76px !important; top: auto !important; width: 524px; font-size: 15px; z-index: 45; }
+body.mobile .chat-bar { width: 340px; height: 38px; }
+body.mobile #chat.open .chat-panel { height: 560px; }
+body.mobile #perf { display: none; }
+
+/* ---- 여러 칸 화면(.cols): 위는 짧은 요약 카드, 아래는 목록(목록만 스크롤) ---- */
+body.mobile .pscreen { overflow: hidden; }
+body.mobile .pscreen > .hall { position: absolute; inset: 0; }
+body.mobile .cols { position: absolute; inset: 0; left: 0; right: 0; top: 0; bottom: 0; width: auto; height: auto; display: flex; flex-direction: column; gap: 10px; padding: 10px; z-index: 1; }
+body.mobile .col { flex: none; width: 100%; min-height: 0; }
+body.mobile .cols > .cpanel { flex: 1; min-height: 0; grid-column: auto; }
+body.mobile .col-a { height: auto; }
+body.mobile .col-a .scroll { max-height: none; }
+body.mobile .parch.fit { height: auto; }
+body.mobile .parch { padding: 8px 14px; }
+body.mobile .parch .rule { margin: 4px 0; }
+body.mobile .fgrid { overflow-y: auto; }
+
+/* ---- 의뢰 화면: 게시판 → 상세 → 편성을 위에서 아래로 ---- */
+
+
+/* ---- 동료 탭: 위 목록, 아래 상세 ---- */
+
+body.mobile .rrow { grid-template-columns: 44px minmax(60px, 1fr) auto auto auto; }
+
+/* ---- 채팅 막대는 작은 버튼으로 ---- */
+body.mobile #chat:not(.open) { width: auto; }
+body.mobile #chat:not(.open) .chat-bar { width: 52px; height: 52px; padding: 0; justify-content: center; border-radius: 50%; }
+body.mobile #chat:not(.open) .chat-bar-txt { display: none; }
+body.mobile #chat:not(.open) .chat-ico { font-size: 22px; }
+body.mobile #chat:not(.open) .chat-badge { position: absolute; right: -2px; top: -2px; }
+body.mobile #chat { bottom: 80px !important; }
+
+/* ---- 길드 시설 ---- */
+body.mobile .fgrid { grid-template-columns: 1fr; padding: 10px; }
+
+/* ---- 동료 목록 행 ---- */
+body.mobile .rrow { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; padding: 8px 10px; }
+body.mobile .rrow .rn { flex: 1; min-width: 80px; font-size: 16px; }
+body.mobile .rrow .rc { flex-basis: 100%; padding-left: 50px; font-size: 13px; color: #aab3d0; }
+body.mobile .rrow .rs { margin-left: auto; }
+
+/* ---- 영입(면접) 화면 ---- */
+body.mobile .rcp-app { bottom: 330px; }
+body.mobile .rcp-app svg.char { height: 380px; }
+body.mobile .rcp-dlg { bottom: 340px; width: 92%; }
+body.mobile .rcp-memo { left: 10px; right: 10px; top: 12px; width: auto; max-height: 200px; }
+body.mobile .rcp-desk { height: 320px; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; gap: 10px; padding: 14px 12px; align-items: start; }
+body.mobile .rcp-desk .rcp-btns { grid-column: 1 / -1; grid-row: 1; grid-template-columns: 1fr 1fr; }
+body.mobile .rcp-btns .act { height: 52px; font-size: 14px; }
+body.mobile .rcp-pad { transform: none; font-size: 12px; }
+
+/* ---- 창(모달) ---- */
+body.mobile .modal, body.mobile .modal.sm { width: 500px; max-width: 96%; max-height: 90%; }
+body.mobile .mhead { font-size: 18px; padding: 14px 16px; }
+body.mobile .mbody { padding: 14px 16px; font-size: 15px; }
+body.mobile .mfoot { flex-wrap: wrap; padding: 12px 16px; }
+body.mobile .mfoot .btn { flex: 1; min-height: 44px; }
+body.mobile .reveal { flex-direction: column; width: 100%; min-width: 0; gap: 12px; align-items: stretch; }
+body.mobile .rv-left { width: 100%; display: flex; align-items: center; gap: 14px; text-align: left; }
+body.mobile .rv-left .rv-face { margin: 0; width: 96px; flex: none; }
+body.mobile .rv-left h2 { margin: 0; }
+body.mobile .rv-row { gap: 8px; }
+body.mobile .rv-k { width: 58px; font-size: 13px; }
+
+/* ---- 튜토리얼 ---- */
+body.mobile .coach-bar { left: 8px !important; right: 8px; width: auto !important; max-width: none !important; min-width: 0 !important; transform: none !important; top: 108px; font-size: 14px; line-height: 1.6; padding: 10px 14px; }
+body.mobile .coach-card { width: 92% !important; }
+body.mobile .coach-card .coach-x { font-size: 16px; line-height: 1.75; }
+body.mobile .coach-card h2 { font-size: 20px; }
+
+/* ---- 전투 ---- */
+body.mobile .b-top { height: 150px; padding-top: 70px; }
+body.mobile .b-bar { width: 80%; }
+body.mobile .b-title { font-size: 20px; }
+body.mobile .b-hero { left: 6%; bottom: 150px; }
+body.mobile .b-hero svg.char { height: 190px; }
+body.mobile .scrim .modal, body.mobile .scrim .modal.sm, body.mobile .scrim .modal.wide { width: 500px !important; max-width: 96% !important; }
+body.mobile .reveal { width: 100% !important; min-width: 0 !important; box-sizing: border-box; }
+body.mobile .rv-right, body.mobile .rv-row, body.mobile .rv-stats { min-width: 0; max-width: 100%; }
+body.mobile .rv-slot { min-width: 0; }
+
+
+/* ===== 스크롤 없는 화면 구성 (목록만 스크롤) ===== */
+/* 의뢰: 1단계 게시판(목록) → 2단계 편성 */
+body.mobile .qb { position: absolute; inset: 0; padding: 10px; display: flex; flex-direction: column; gap: 10px; z-index: 1; }
+body.mobile .qb.m-board .qdesk { display: none; }
+body.mobile .qb.m-board .cork { flex: 1; min-height: 0; border-width: 8px; }
+body.mobile .qb.m-board .cork-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 12px; padding: 14px 10px; }
+body.mobile .qb.m-party .cork { display: none; }
+body.mobile .m-back { align-self: flex-start; padding: 8px 16px; border-radius: 999px; background: rgba(10, 12, 20, .85); border: 1px solid var(--gold-d); color: var(--gold); font-weight: 800; font-size: 15px; flex: none; }
+body.mobile .qb.m-party .qdesk { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 8px; padding: 8px; overflow: hidden; }
+body.mobile .qb.m-party .qdesk > * { height: auto !important; min-height: 0; }
+body.mobile .qpaper { flex: none; padding: 8px 12px; }
+body.mobile .qpaper .small { display: none; }
+body.mobile .qpaper .qp-head { font-size: 15px; }
+body.mobile .qpaper .chk { font-size: 13px; padding: 1px 0; }
+body.mobile .qdesk .cpanel { flex: none; }
+body.mobile .qdesk .cpanel .scene.party { height: 250px !important; }
+body.mobile .qdesk .pslots { position: absolute; top: 56px; left: 6px; right: 6px; bottom: 4px; flex-wrap: nowrap; gap: 6px; justify-content: center; }
+body.mobile .qdesk .pslot { width: 84px; } body.mobile .qdesk .pslot .pic { width: 58px; height: 58px; }
+body.mobile .qdesk .col { flex: 1; min-height: 0; height: auto; } body.mobile .qdesk .dpanel { height: 100% !important; }
+body.mobile .qdesk .dpanel .list { flex: 1; min-height: 0; overflow-y: auto; }
+body.mobile .qdesk .actbar .act { font-size: 14px; padding: 8px 4px; min-height: 44px; }
+
+/* 동료: 목록 ↔ 상세(페이지 3장) */
+body.mobile .ros { grid-template-columns: 1fr; grid-template-rows: 1fr; padding: 10px; }
+body.mobile .ros.m-list .ros-detail, body.mobile .ros.m-detail .ros-list { display: none; }
+body.mobile .ros-list .pills { padding: 4px 10px; }
+body.mobile .ros-detail { overflow: hidden; padding: 12px 14px; }
+body.mobile .rd-head { flex-wrap: wrap; gap: 10px; padding-bottom: 8px; }
+body.mobile .rd-head > svg { width: 64px; height: 64px; }
+body.mobile .rd-title h2 { font-size: 20px; }
+body.mobile .rd-acts { width: 100%; display: flex; gap: 8px; flex-wrap: wrap; }
+body.mobile .rd-acts .btn { flex: 1; }
+body.mobile .rd-pages { display: flex; gap: 6px; margin-top: 10px; }
+body.mobile .rd-pages .pill { flex: 1; padding: 8px 4px; font-size: 14px; text-align: center; }
+body.mobile .rd-grid { grid-template-columns: 1fr; gap: 10px; margin-top: 10px; }
+body.mobile .rd-grid.pg0 > :nth-child(n+3), body.mobile .rd-grid.pg1 > :nth-child(-n+2), body.mobile .rd-grid.pg1 > :nth-child(n+5), body.mobile .rd-grid.pg2 > :nth-child(-n+4) { display: none; }
+
+/* 설명용 양피지 카드는 한 줄 요약만 (긴 설명은 숨김) */
+body.mobile .col-a { height: auto; }
+body.mobile .parch p.small, body.mobile .parch .scroll p.small { display: none; }
+body.mobile .parch .lines p:nth-child(n+3) { display: none; }
+
+/* ---- 전투 세로 배치: 위쪽 몬스터 / 아래쪽 아군 ---- */
+body.mobile .b-enemies { left: 10px; right: 10px; top: 250px; bottom: auto; max-width: none; justify-content: center; align-items: flex-end; gap: 10px; }
+body.mobile .b-enemies.many { gap: 4px; }
+body.mobile .b-party { left: 10px; right: 10px; bottom: 190px; max-width: none; justify-content: center; }
+body.mobile .b-party.big { max-width: none; bottom: 190px; }
+body.mobile .b-party.big ~ .b-enemies { max-width: none; }
+body.mobile .b-party .hpbar { width: 96px; }
+body.mobile .b-log { left: 84px; width: 440px; bottom: 12px; }
+body.mobile .b-order { left: 12px; top: 8px; }
+body.mobile .b-bottom { height: 180px; padding: 0 24px 14px 84px; }
+body.mobile .b-mon .hpbar { width: 90px; }
+body.mobile .b-enemies { top: 230px; row-gap: 22px; }
+
+/* 전투: 로그는 승률 그래프 위로, 아군은 그만큼 위로 */
+body.mobile .b-party, body.mobile .b-party.big { bottom: 310px; }
+body.mobile .b-enemies { top: 220px; }
+body.mobile .b-log { left: 20px; width: 500px; bottom: 192px; min-height: 0; }
+body.mobile .b-log div:nth-last-child(n+4) { display: none; }
+body.mobile .lobby-note { left: 84px; right: 14px; transform: none; width: auto; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+body.mobile .b-party, body.mobile .b-party.big { bottom: 290px; }
+body.mobile .b-party svg.char, body.mobile .b-party.n1 svg.char, body.mobile .b-party.n2 svg.char, body.mobile .b-party.n3 svg.char, body.mobile .b-party.n4 svg.char { height: 170px; }
+body.mobile .b-party.big svg.char { height: 120px; }
+body.mobile .b-enemies { flex-wrap: nowrap; top: 200px; gap: 6px; }
+body.mobile .b-mon .hpbar { width: 76px; }
+body.mobile .b-party, body.mobile .b-party.big { bottom: 270px; }
+
+/* ---- 전투 가로 대치: 아군 왼쪽 / 적 오른쪽, 각 편 3+2 두 열 ---- */
+body.mobile .b-party, body.mobile .b-party.big, body.mobile .b-enemies, body.mobile .b-enemies.many {
+  position: absolute; top: 200px; bottom: auto; height: 540px; width: 46%; max-width: none;
+  display: flex; flex-direction: column; flex-wrap: wrap; gap: 6px 4px; padding: 0; align-items: center; transform: none;
+}
+body.mobile .b-party, body.mobile .b-party.big { left: 8px; right: auto; flex-wrap: wrap-reverse; justify-content: center; align-content: flex-end; }
+body.mobile .b-enemies, body.mobile .b-enemies.many { right: 8px; left: auto; flex-wrap: wrap; justify-content: center; align-content: flex-start; }
+body.mobile .b-party .b-hero { margin: 0; transform: none; width: 112px; }
+body.mobile .b-party svg.char, body.mobile .b-party.n1 svg.char, body.mobile .b-party.n2 svg.char, body.mobile .b-party.n3 svg.char, body.mobile .b-party.n4 svg.char, body.mobile .b-party.big svg.char { height: 112px; }
+body.mobile .b-party .hpbar, body.mobile .b-party.big .hpbar { width: 84px; }
+body.mobile .b-party .nameplate { font-size: 11px; padding: 1px 7px; }
+body.mobile .b-party .hptxt { font-size: 10px; }
+body.mobile .b-mon { width: 112px; }
+body.mobile .b-mon .hpbar { width: 70px; }
+body.mobile .b-mon svg.mon { max-height: 100px; width: auto; }
+body.mobile .b-enemies .b-more { align-self: center; }
+body.mobile .b-party, body.mobile .b-party.big, body.mobile .b-enemies, body.mobile .b-enemies.many { height: 530px; top: 190px; gap: 10px 4px; }
+body.mobile .b-party svg.char, body.mobile .b-party.n1 svg.char, body.mobile .b-party.n2 svg.char, body.mobile .b-party.n3 svg.char, body.mobile .b-party.n4 svg.char, body.mobile .b-party.big svg.char { height: 96px; }
+body.mobile .b-party .b-hero, body.mobile .b-mon { width: 104px; flex: none; }
+body.mobile .b-mon svg.mon { max-height: 84px; }
+body.mobile .b-party, body.mobile .b-party.big, body.mobile .b-enemies, body.mobile .b-enemies.many { top: 215px; height: 520px; justify-content: flex-start; gap: 8px 4px; }
+body.mobile .b-party svg.char, body.mobile .b-party.n1 svg.char, body.mobile .b-party.n2 svg.char, body.mobile .b-party.n3 svg.char, body.mobile .b-party.n4 svg.char, body.mobile .b-party.big svg.char { height: 84px; }
+body.mobile .b-party .b-hero { margin: 0 !important; }
+/* 그리드로 확정: 3행 × 2열, 위에서 아래로 채움 */
+body.mobile .b-party, body.mobile .b-party.big, body.mobile .b-enemies, body.mobile .b-enemies.many {
+  display: grid !important; grid-template-rows: repeat(3, auto); grid-auto-flow: column; grid-auto-columns: 1fr;
+  align-content: start; justify-items: center; align-items: start; height: auto; gap: 14px 2px; top: 215px;
+}
+body.mobile .b-party, body.mobile .b-party.big { direction: rtl; }
+body.mobile .b-party > *, body.mobile .b-enemies > * { direction: ltr; }
+body.mobile .b-party .b-hero { left: auto !important; bottom: auto !important; top: auto; }
+
+/* ---- 납작한 화면(브라우저 주소창 등으로 높이가 줄어든 폰): 무대 높이는 --sh 로 가변 ---- */
+body.mobile .b-bottom { height: 140px; padding-bottom: 10px; }
+body.mobile .b-log { bottom: 150px; }
+body.mobile .b-party, body.mobile .b-party.big, body.mobile .b-enemies, body.mobile .b-enemies.many { top: 175px; }
+body.mobile .b-party svg.char, body.mobile .b-party.n1 svg.char, body.mobile .b-party.n2 svg.char, body.mobile .b-party.n3 svg.char, body.mobile .b-party.n4 svg.char, body.mobile .b-party.big svg.char { height: clamp(52px, calc((var(--sh, 1170px) - 543px) / 3 - 60px), 96px); }
+body.mobile .b-mon svg.mon { max-height: clamp(46px, calc((var(--sh, 1170px) - 543px) / 3 - 50px), 84px); }
+body.mobile .b-top { height: 140px; padding-top: 62px; }
+body.mobile.short .b-title { font-size: 18px; }

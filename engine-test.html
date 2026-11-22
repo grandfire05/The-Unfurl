@@ -1,0 +1,32 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>전투 엔진 시험장</title>
+<style>body{font:15px/1.5 sans-serif;background:#1d1a16;color:#eee;padding:20px;max-width:760px;margin:auto}
+select,input,button{font:inherit;padding:4px 8px;margin:2px}table{border-collapse:collapse;margin-top:12px;width:100%}td,th{border:1px solid #555;padding:4px 8px;text-align:center}
+h1{font-size:20px}small{color:#aaa}</style></head><body>
+<h1>전투 엔진 시험장 (개발용)</h1>
+<p><small>파티는 전사·사제·방패병 3명(경로는 레벨에 따라 첫 갈래). 스탯 분배와 재능은 매번 랜덤. 새 엔진(js/engine.js) 단독 시험입니다.</small></p>
+<div>의뢰 등급 <select id="g"><option>F</option><option>E</option><option>D</option><option>C</option><option>B</option><option>A</option><option>S</option></select>
+유형 <select id="ty"><option value="boss">보스</option><option value="sweep">토벌</option><option value="wave">웨이브</option></select>
+레벨 <input id="lv" type="number" value="" placeholder="기본" style="width:70px">
+횟수 <input id="n" type="number" value="200" style="width:70px"></div>
+<div>파티 희귀도 (3명) <select id="r1"></select><select id="r2"></select><select id="r3"></select>
+<button id="go">시험 실행</button></div>
+<table id="out"><tr><th>희귀도</th><th>평균 시간</th><th>위기</th><th>전멸</th><th>교착</th></tr></table>
+<script src="js/data-classes.js"></script><script src="js/data-unique.js"></script><script src="js/data-traits.js"></script><script src="js/engine.js"></script>
+<script>
+const R=Engine.GRADES;['r1','r2','r3'].forEach(id=>{document.getElementById(id).innerHTML=R.map(x=>'<option>'+x+'</option>').join('');});
+function run(){
+  const g=document.getElementById('g').value,ty=document.getElementById('ty').value,n=+document.getElementById('n').value||100;
+  const L=+document.getElementById('lv').value||Engine.QUEST_GRADES[g].level;
+  const rars=['r1','r2','r3'].map(id=>document.getElementById(id).value);
+  let T=0,C=0,W=0,S=0;const roots=['전사','사제','방패병'];
+  for(let k=0;k<n;k++){
+    const party=rars.map((r,i)=>({id:'c'+i,rarity:r,level:L,talent:Engine.rollTalent(r,Math.random),split:Engine.randomSplit(Math.random),traits:[],unique:null,
+      attrMain:['불','물','바람','땅','빛','어둠'][Math.floor(Math.random()*6)],attrSub:null,path:Engine.pathOf(roots[i],L)}));
+    const q=Engine.makeQuest(g,ty,Math.random,{level:L});
+    const r=Engine.simulate(party,q,Math.random);T+=r.seconds;C+=r.crisis;W+=r.outcome==='wipe';S+=r.outcome==='stalemate';
+  }
+  const row='<tr><td>'+rars.join('/')+' · '+g+' '+ty+' Lv'+L+'</td><td>'+(T/n/60).toFixed(1)+'분</td><td>'+(100*C/n).toFixed(0)+'%</td><td>'+(100*W/n).toFixed(0)+'%</td><td>'+(100*S/n).toFixed(0)+'%</td></tr>';
+  document.getElementById('out').insertAdjacentHTML('beforeend',row);
+}
+document.getElementById('go').onclick=run;
+</script></body></html>

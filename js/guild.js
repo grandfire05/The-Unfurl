@@ -103,8 +103,15 @@
       const raw = localStorage.getItem(SAVE_KEY);
       if (raw) state = JSON.parse(raw);
     } catch (e) { state = null; }
+    // 튜토리얼 도중에 나갔다 들어오면 처음부터 다시 한다 (튜토리얼 중의 진행은 모두 되돌리고 길드 이름만 남긴다)
+    let keepName = null;
+    if (state && state.version === 3 && typeof state.tutorial === 'number' && state.tutorial > 0 && state.tutorial < TUTORIAL_DONE) {
+      keepName = { n: state.guildName, ok: state.guildNamed };
+      state = null;
+    }
     if (!state || state.version !== 3) {
       state = newState();
+      if (keepName) { state.guildName = keepName.n; state.guildNamed = keepName.ok; }
       registry = Character.createSkillRegistry(null);
       addChronicle('길드 창설', 'founded');
     } else {

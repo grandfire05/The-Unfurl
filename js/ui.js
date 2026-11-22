@@ -684,7 +684,7 @@
     const dlg = a
       ? `<div class="rcp-dlg" data-act="rec-next" role="button" tabindex="0"><div class="nm">${esc(c.name)}</div><div class="tx${isHint ? ' hint' : ''}">${esc(lines[li] || '')}</div><div class="nx">${last ? '' : '다음 ▶'} <small>${li + 1} / ${lines.length}</small></div></div>`
       : '<div class="rcp-dlg"><div class="tx" style="text-align:center;color:var(--muted)">접수처 앞이 비어 있어요. 다음 지원자를 기다리는 중…</div></div>';
-    const memo = a ? `<div class="rcp-memo"><div class="mh">면접 메모 <small>${li + 1} / ${lines.length}</small></div>${lines.slice(0, li + 1).map((t, i) => `<p class="${a.hint && i === lines.length - 1 ? 'hint' : ''}">${esc(t)}</p>`).join('')}</div>` : '';
+    const memo = a ? `<div class="rcp-memo"><div class="mh">면접 메모 <small>${li + 1} / ${lines.length}</small></div>${lines.map((t, i) => `<p class="${a.hint && i === lines.length - 1 ? 'hint ' : ''}${i > li ? 'fut' : i === li ? 'cur' : ''}">${esc(t)}</p>`).join('')}</div>` : '';
     const desk = `<div class="rcp-desk">
       <div class="rcp-pad"><h3>채용 점검</h3>${chk(`금화 ${Guild.recruitCost()} (보유 ${Guild.state.gold})`, Guild.state.gold >= Guild.recruitCost())}${chk(`기숙사 여유 (${nAct} / ${cap})`, nAct < cap)}
         <p class="small muted" style="margin-top:6px">등급·재능·특성은 채용해서 키워 봐야 알 수 있어요.<br>돌려보낸 지원자는 다시 오지 않아요.</p></div>
@@ -973,25 +973,26 @@
      ============================================================ */
   const chars2 = () => Guild.state.characters.filter((c) => c.status === 'ACTIVE').length;
   const TUT = [
-    { card: true, t: '길드에 오신 걸 환영해요', x: '당신은 작은 길드의 마스터예요. 개성 있는 모험가를 맞이해 정성껏 키우는 것이 이 게임의 전부예요. 의뢰와 전투는 그 수단이고요.<br><br><b>체력이 0이 된 모험가는 영원히 돌아오지 않아요.</b> 잃은 사람은 되살릴 수 없으니, 누구를 어디로 보낼지 신중하게 정해요.', btn: '시작하기' },
-    { t: '모험가를 맞이해요', x: '모험가는 <b>주점</b>에서 만나요. 위쪽 <b>주점</b> 탭(숫자 키 <b>4</b>)을 눌러 길드의 문을 두드리는 지원자들을 만나 봐요.<br>지원자는 시간이 지나면 새로 찾아오고, 놓친 사람은 다시 오지 않을 수도 있어요.', hl: ['#tabs .tab[data-screen="recruit"]'], allow: { goto: ['recruit'], acts: [] }, done: () => U.screen === 'recruit' },
-    { t: '이야기를 들어봐요', x: '지원자가 접수처에서 자기 이야기를 들려줘요. <b>아래 대사창을 눌러</b> 끝까지 들어 봐요.<br>출신지와 말투, 사연 속에 그 사람의 <b>성격</b>이 묻어나요. 오른쪽 위 <b>면접 메모</b>에는 지금까지 들은 이야기가 차곡차곡 쌓여요.<br>가끔 마지막에 <b>색이 다른 한 줄</b>이 나오면, 숨은 재능이나 특별한 능력을 슬쩍 암시하는 힌트예요.', hl: ['.rcp-dlg', '.rcp-memo'], allow: { goto: ['recruit'], acts: ['rec-next', 'app-sel'] }, done: () => { const a = Guild.applicants[0]; if (!a) return false; const n = a.story.length + (a.hint ? 1 : 0); return (U.recLine || 0) >= n - 1; } },
-    { next: true, t: '채용 전에 확인해요', x: '아래 <b>채용 점검</b>은 채용할 수 있는 조건이에요. <b>금화</b>와 <b>기숙사 자리</b>가 모두 충족돼야 해요. 오른쪽 <b>지원서</b>에는 이름과 기본 직업, 그리고 지원자가 접수처에 <b>머무는 시간</b>이 적혀 있어요.<br>시간이 지나면 지원자는 떠나 버리니, 마음에 들면 서둘러야 해요. 등급·재능·특성은 채용해서 키워 봐야 알 수 있어요.', hl: ['.rcp-pad'], allow: { goto: ['recruit'], acts: [] } },
-    { t: '첫 모험가를 채용해요', x: '지원자는 출신·사연·분위기만 보여요. 능력은 함께해 봐야 알아요. 한 명을 골라 <b>채용</b>을 눌러요. (금화 100)<br>모험가는 저마다 <b>성격과 재능이 달라서</b> 같은 사람이 둘은 없어요. 마음에 들지 않으면 <b>돌려보내기</b>로 다른 지원자를 기다릴 수도 있어요.', hl: ['[data-act="hire"]', '[data-act="app-sel"]', '[data-act="app-dismiss"]'], allow: { goto: ['recruit'], acts: ['app-sel', 'hire', 'app-dismiss'] }, done: () => chars2() >= 1 && !U.modal },
-    { t: '한 명 더 채용해요', x: '의뢰는 보통 2~3명이 <b>파티</b>로 나가요. 서로 호흡이 맞으면 <b>유대</b>가 쌓여 위기에서 힘이 되어 준답니다. 한 명 더 채용해 봐요.<br>지금 가진 금화는 정확히 두 명 몫이에요.', hl: ['[data-act="hire"]', '[data-act="app-sel"]', '[data-act="app-dismiss"]'], allow: { goto: ['recruit'], acts: ['app-sel', 'hire', 'app-dismiss'] }, done: () => chars2() >= 2 && !U.modal },
-    { card: true, t: '길드의 작은 지원', x: '첫 의뢰는 위험하니, 길드가 두 사람에게 약간의 훈련을 시켜 줬어요. <b>둘 다 Lv.3</b>으로 시작하고, 몬스터가 약한 <b>연습 의뢰</b>도 하나 걸어 뒀어요. (튜토리얼에서만 주는 선물이에요)<br><br>평소에는 <b>모험가 › 훈련장</b>에서 시간을 들여 키워요.', btn: '고마워요', onNext: () => { Guild.state.characters.filter((c) => c.status === 'ACTIVE').slice(0, 2).forEach((c) => { if (c.level < 3) Guild.devSetLevel(c.id, 3); }); Guild.addTutorialContract(); U.contract = null; U.tutPicked = false; } },
-    { t: '의뢰판으로 가요', x: '이제 일을 맡길 차례예요. 위쪽 <b>원정</b> 탭을 눌러 <b>의뢰 게시판</b>으로 가요. (단축키 2)<br>게시판에는 마을 사람들이 붙여 둔 의뢰가 걸리고, 의뢰마다 <b>마감 시간</b>이 있어요.', hl: ['#tabs [data-screen="quests"]'], allow: { goto: ['quests'] }, done: () => U.screen === 'quests' },
-    { next: true, at: 520, t: '의뢰지 읽는 법', x: '게시판의 종이 한 장이 <b>의뢰</b>예요. 왼쪽 위 동그란 글자는 <b>등급</b>(F가 가장 쉬워요), 그 아래는 <b>의뢰 이름</b>과 <b>토벌·호위</b> 같은 종류, <b>필요 인원</b>이에요.<br><b>금화·경험치</b>는 보상이고, <b>명성</b> 줄은 클리어하면 오르고(+) 사망하거나 전멸하면 내려가는(−) 수치예요. 파티를 정하면 아래쪽에 <b>위험도</b> 칩이 나타나고, 오른쪽 아래는 <b>마감 시간</b>이에요. 빈 자리는 시간이 지나면 새 의뢰로 채워져요.', hl: ['.cork'], allow: { goto: ['quests'], acts: [] } },
-    { t: '의뢰를 골라요', x: '게시판의 <b>연습 의뢰</b> 종이를 눌러 선택해요. 선택하면 왼쪽 아래에 <b>의뢰 상세</b>가 열리고, 가운데에 <b>원정대 편성</b> 칸이 준비돼요.', hl: ['.qnote'], allow: { goto: ['quests'], acts: ['quest-sel'] }, done: () => !!U.tutPicked || Guild.missions.length >= 1 },
-    { next: true, t: '편성 화면 읽는 법', x: '<b>왼쪽 의뢰 상세</b>: 보상과 명성 변화, 그리고 <b>출정 준비</b> 점검표(필요 인원 등)가 있어요. 빨간 줄은 아직 부족한 조건이에요.<br><b>가운데 원정대 편성</b>: 칩으로 몬스터 종류·인원·<b>위험도</b>를 한눈에 봐요. 위험도는 지금 파티가 위기를 맞을 가능성이에요. 둥근 칸에 모험가를 넣어요.<br><b>오른쪽 대기 모험가</b>: 쉬고 있는 모험가 목록이에요. 추천순·레벨·직업으로 정렬할 수 있어요. 모험가를 눌러 파티에 넣거나 빼요.', hl: ['.qpaper', '.cpanel', '.pscreen .dpanel'], allow: { goto: ['quests'], acts: [] } },
-    { t: '파티를 꾸려 출발해요', x: '<b>연습 의뢰</b>를 고르고 <b>자동 편성</b>을 누른 뒤 <b>출정!</b>을 눌러요.<br>의뢰 카드의 <b>위험도</b> 표시는 이 파티가 위기를 맞을 가능성을 알려 줘요. 연습 의뢰는 언제나 <b>안전</b>이니 안심해요. 의뢰마다 필요한 인원도 달라요.', hl: ['[data-act="recommend"]', '[data-act="dispatch"]'], allow: { goto: ['quests'], acts: ['quest-sel', 'party-toggle', 'recommend', 'clear-party', 'dispatch', 'cand-sort', 'confirm-yes'] }, done: () => Guild.missions.length >= 1 },
-    { t: '전투를 지켜봐요', x: '파티가 길드를 떠났어요! 위쪽 <b>원정 중</b> 칩을 눌러 <b>전투 보기</b>로 가 봐요.<br>모험가들이 어떻게 싸우는지, 어떤 말을 주고받는지 지켜보는 것도 이 게임의 재미예요.', hl: ['.strip [data-screen="active"]', '[data-act="view-battle"]'], allow: { goto: ['quests', 'active'], acts: ['view-battle'] }, done: () => U.screen === 'battle' },
-    { next: true, at: 300, t: '전투 화면 읽는 법 ①', x: '위쪽에 <b>의뢰 이름</b>과 <b>전투 경과 시간</b>, 남은 몬스터 수가 보여요. 그 아래 <b>우리 편이 이길 확률</b>은 지금 상황을 바탕으로 실시간으로 바뀌어요.<br>왼쪽 위 <b>행동 순서</b> 줄은 다음에 누가 움직이는지 알려줘요.', hl: ['.b-top', '.b-order'], allow: { goto: [], acts: [] } },
-    { next: true, t: '전투 화면 읽는 법 ②', x: '왼쪽이 우리 모험가, 오른쪽이 몬스터예요. 초록 막대는 <b>체력(HP)</b>이에요. 체력이 크게 줄면 <b>위기</b>가 되고, <b>0이 되면 그 자리에서 사망</b>해요.<br>왼쪽 아래 <b>전투 기록</b>에는 일어난 일이 글로 남고, 아래쪽 <b>승률 그래프</b>는 전투 중 승률이 어떻게 출렁였는지 보여줘요. 모험가마다 말투가 달라, 말풍선도 눈여겨볼 만해요.', hl: ['.b-party', '.b-enemies', '.b-log', '.b-bottom'], allow: { goto: [], acts: [] } },
-    { card: true, t: '전투는 실시간이에요', x: '전투 시간은 실제 1초에 1초씩 흘러요. <b>얼마나 걸릴지는 아무도 몰라요.</b> (대개 몇 분) 접속을 끊어도 전투는 계속돼요.<br><br>싸우다 <b>위기</b>가 오면 전투가 멈추고 결정 시간이 주어져요: <b>계속 싸운다 / 전체 후퇴</b>. 시간 안에 정하지 않으면 계속 싸워요. 체력이 0이 되면 <b>그 즉시 사망</b>해요.', btn: '알겠어요' },
-    { t: '결과를 기다려요', x: '전투가 끝나면 <b>귀환 보고</b>가 도착해요. 기다리는 동안 다른 화면을 둘러봐도 괜찮아요. 모험가 명부나 장터를 구경해 보세요.<br>앞으로 위기 신호가 오면 직접 판단해야 하지만, 이번 연습 의뢰는 안전하니 마음 편히 기다려요.', allow: null, done: () => mailCount() >= 1 },
-    { t: '결과를 확인해요', x: '위쪽 <b>귀환 보고</b> 칩을 눌러 결과를 <b>확인</b>해요.<br><b>경험치</b>는 모험가를 성장시키고, <b>재료</b>는 장비의 원료가 되고, <b>명성</b>은 길드를 키워요. 모험가의 <b>등급 점수</b>도 함께 쌓였을 거예요.', hl: ['.strip [data-screen="results"]', '[data-act="dismiss"]', '[data-act="dismiss-all"]'], allow: { goto: ['quests', 'results', 'active'], acts: ['dismiss', 'dismiss-all', 'close-modal'] }, done: () => mailCount() === 0 },
-    { card: true, t: '이제 길드를 키워 봐요', x: '의뢰로 <b>명성</b>을 모아 길드를 승급하면 시설과 의뢰가 넓어져요.<br>드롭 재료는 <b>장터 › 보급고</b>에서 사 두었다가 <b>대장간</b>에서 장비로 만들고, <b>진열</b>에 적정가로 올리면 모험가가 사 가요. 몬스터는 보고가 쌓일수록 <b>도감</b>에 약점이 드러나요.<br><br>모험가를 잃어도 그 이름은 <b>연대기</b>에 남아요. 건투를 빌어요!', btn: '길드 운영 시작', onNext: () => { Guild.state.gold += 100; } },
+    { card: true, t: '길드에 오신 걸 환영해요', x: '당신은 작은 길드의 마스터예요.<br>개성 있는 모험가를 맞이하고 정성껏 키우는 게임이에요.<br>의뢰와 전투는 그 수단일 뿐이에요.<br><br><b>체력이 0이 된 모험가는 영원히 돌아오지 않아요.</b><br>잃은 사람은 되살릴 수 없으니, 누구를 어디로 보낼지 신중하게 정해요.', btn: '시작하기' },
+    { t: '모험가를 맞이해요', x: '모험가는 <b>주점</b>에서 만나요.<br>위쪽 <b>주점</b> 탭(숫자 키 <b>4</b>)을 눌러 보세요.<br>▸ 지원자는 시간이 지나면 새로 찾아와요.<br>▸ 놓친 지원자는 다시 오지 않을 수도 있어요.', hl: ['#tabs .tab[data-screen="recruit"]'], allow: { goto: ['recruit'], acts: [] }, done: () => U.screen === 'recruit' },
+    { t: '이야기를 들어봐요', x: '지원자가 자기 이야기를 들려줘요. <b>아래 대사창</b>을 눌러 끝까지 들어 봐요.<br>▸ 출신지·말투·사연에 그 사람의 <b>성격</b>이 묻어나요.<br>▸ 오른쪽 위 <b>면접 메모</b>에 들은 이야기가 쌓여요.<br>▸ 마지막에 <b>색이 다른 한 줄</b>이 나오면 숨은 재능을 암시하는 <b>힌트</b>예요.', hl: ['.rcp-dlg', '.rcp-memo'], allow: { goto: ['recruit'], acts: ['rec-next', 'app-sel'] }, done: () => { const a = Guild.applicants[0]; if (!a) return false; const n = a.story.length + (a.hint ? 1 : 0); return (U.recLine || 0) >= n - 1; } },
+    { next: true, t: '채용 전에 확인해요', x: '<b>채용 점검</b> (왼쪽 아래)<br>▸ <b>금화</b>와 <b>기숙사 자리</b>가 모두 충족돼야 채용할 수 있어요.<br><b>지원서</b> (오른쪽 아래)<br>▸ 이름, 기본 직업, 접수처에 <b>머무는 시간</b>이 적혀 있어요.<br>▸ 시간이 지나면 떠나니, 마음에 들면 서둘러요.', hl: ['.rcp-pad'], allow: { goto: ['recruit'], acts: [] } },
+    { t: '첫 모험가를 채용해요', x: '한 명을 골라 <b>채용</b>을 눌러요. (금화 100)<br>▸ 능력은 함께 지내 봐야 알 수 있어요.<br>▸ 모험가는 저마다 <b>성격과 재능</b>이 달라서 같은 사람이 없어요.<br>▸ 마음에 들지 않으면 <b>돌려보내기</b>로 다른 지원자를 기다려요.', hl: ['[data-act="hire"]', '[data-act="app-sel"]', '[data-act="app-dismiss"]'], allow: { goto: ['recruit'], acts: ['app-sel', 'hire', 'app-dismiss'] }, done: () => chars2() >= 1 },
+    { t: '합류를 확인해요', x: '채용하면 <b>합류 알림</b>이 떠요.<br>▸ <b>이름·등급·주 속성</b>이 보여요.<br>▸ 특성은 아직 몰라요. 함께 키우며 하나씩 드러나요.<br>아래 <b>확인</b>을 눌러 닫아요.', hl: ['.modal .mfoot .btn.ghost'], allow: { goto: ['recruit'], acts: ['close-modal'] }, done: () => !U.modal },
+    { t: '한 명 더 채용해요', x: '의뢰는 보통 2~3명이 <b>파티</b>로 나가요. 한 명 더 채용해요.<br>▸ 가진 금화는 정확히 두 명 몫이에요.<br>▸ 호흡이 맞으면 <b>유대</b>가 쌓여 위기에서 힘이 돼요.', hl: () => (U.modal ? ['.modal .mfoot .btn.ghost'] : ['[data-act="hire"]', '[data-act="app-sel"]', '[data-act="app-dismiss"]']), allow: { goto: ['recruit'], acts: ['app-sel', 'hire', 'app-dismiss'] }, done: () => chars2() >= 2 && !U.modal },
+    { card: true, t: '길드의 작은 지원', x: '첫 의뢰를 위해 길드가 작은 선물을 준비했어요.<br>▸ 두 사람 모두 <b>Lv.3</b>으로 시작해요.<br>▸ 몬스터가 약하고 늘 안전한 <b>연습 의뢰</b>를 하나 걸어 뒀어요.<br>(튜토리얼에서만 주는 선물이에요)<br><br>평소에는 <b>모험가 › 훈련장</b>에서 시간을 들여 키워요.', btn: '고마워요', onNext: () => { Guild.state.characters.filter((c) => c.status === 'ACTIVE').slice(0, 2).forEach((c) => { if (c.level < 3) Guild.devSetLevel(c.id, 3); }); Guild.addTutorialContract(); U.contract = null; U.tutPicked = false; } },
+    { t: '의뢰판으로 가요', x: '이제 일을 맡길 차례예요.<br>위쪽 <b>원정</b> 탭(숫자 키 <b>2</b>)을 눌러 <b>의뢰 게시판</b>으로 가요.<br>▸ 게시판에는 마을 사람들의 의뢰가 걸려요.<br>▸ 의뢰마다 <b>마감 시간</b>이 있어요.', hl: ['#tabs [data-screen="quests"]'], allow: { goto: ['quests'] }, done: () => U.screen === 'quests' },
+    { next: true, at: 520, t: '의뢰지 읽는 법', x: '종이 한 장이 의뢰 하나예요.<br>▸ <b>동그란 글자</b>: 등급 (F가 가장 쉬워요)<br>▸ <b>이름·종류·필요 인원</b>: 무엇을 몇 명이 하는지<br>▸ <b>금화·경험치</b>: 보상<br>▸ <b>명성</b>: 클리어하면 오르고(+), 사망·전멸하면 내려가요(−)<br>▸ <b>위험도 칩</b>: 파티를 정하면 나타나요<br>▸ <b>마감 시간</b>: 지나면 사라지고 새 의뢰로 채워져요', hl: ['.cork'], allow: { goto: ['quests'], acts: [] } },
+    { t: '의뢰를 골라요', x: '<b>연습 의뢰</b> 종이를 눌러 선택해요.<br>▸ 왼쪽 아래에 <b>의뢰 상세</b>가 열려요.<br>▸ 가운데에 <b>원정대 편성</b> 칸이 준비돼요.', hl: ['.qnote'], allow: { goto: ['quests'], acts: ['quest-sel'] }, done: () => !!U.tutPicked || Guild.missions.length >= 1 },
+    { next: true, t: '편성 화면 읽는 법', x: '<b>왼쪽 · 의뢰 상세</b><br>▸ 보상, 명성 변화, <b>출정 준비</b> 점검표예요. 빨간 줄은 부족한 조건이에요.<br><b>가운데 · 원정대 편성</b><br>▸ 칩으로 몬스터·인원·<b>위험도</b>를 봐요. 위험도는 위기를 맞을 가능성이에요.<br>▸ 둥근 칸에 모험가를 넣어요.<br><b>오른쪽 · 대기 모험가</b><br>▸ 쉬는 모험가 목록이에요. 눌러서 파티에 넣고 빼요.<br>▸ 추천순·레벨·직업으로 정렬해요.', hl: ['.qpaper', '.cpanel', '.pscreen .dpanel'], allow: { goto: ['quests'], acts: [] } },
+    { t: '파티를 꾸려 출발해요', x: '<b>자동 편성</b>을 누른 뒤 <b>출정!</b>을 눌러요.<br>▸ 위험도 칩이 이 파티가 위기를 맞을 가능성을 알려 줘요.<br>▸ 연습 의뢰는 언제나 <b>안전</b>이에요.<br>▸ 의뢰마다 필요한 인원이 달라요.', hl: ['[data-act="recommend"]', '[data-act="dispatch"]'], allow: { goto: ['quests'], acts: ['quest-sel', 'party-toggle', 'recommend', 'clear-party', 'dispatch', 'cand-sort', 'confirm-yes'] }, done: () => Guild.missions.length >= 1 },
+    { t: '전투를 지켜봐요', x: '파티가 길드를 떠났어요!<br>위쪽 <b>원정 중</b> 칩을 눌러 <b>전투 보기</b>로 가 봐요.<br>▸ 모험가들이 싸우며 주고받는 말도 이 게임의 재미예요.', hl: ['.strip [data-screen="active"]', '[data-act="view-battle"]'], allow: { goto: ['quests', 'active'], acts: ['view-battle'] }, done: () => U.screen === 'battle' },
+    { next: true, at: 300, t: '전투 화면 읽는 법 ①', x: '<b>위쪽</b><br>▸ 의뢰 이름, 전투 경과 시간, 남은 몬스터 수<br>▸ <b>우리 편이 이길 확률</b>은 실시간으로 바뀌어요.<br><b>왼쪽 위 · 행동 순서</b><br>▸ 다음에 누가 움직이는지 알려줘요.', hl: ['.b-top', '.b-order'], allow: { goto: [], acts: [] } },
+    { next: true, t: '전투 화면 읽는 법 ②', x: '<b>왼쪽은 우리 모험가, 오른쪽은 몬스터</b>예요.<br>▸ 초록 막대는 <b>체력(HP)</b>이에요. 크게 줄면 <b>위기</b>, <b>0이 되면 즉시 사망</b>해요.<br><b>아래쪽</b><br>▸ <b>전투 기록</b>: 일어난 일이 글로 남아요.<br>▸ <b>승률 그래프</b>: 승률이 어떻게 출렁였는지 보여줘요.', hl: ['.b-party', '.b-enemies', '.b-log', '.b-bottom'], allow: { goto: [], acts: [] } },
+    { card: true, t: '전투는 실시간이에요', x: '전투 시간은 실제 시간과 같이 흘러요.<br>▸ <b>얼마나 걸릴지는 아무도 몰라요.</b> (대개 몇 분)<br>▸ 접속을 끊어도 전투는 계속돼요.<br><br>싸우다 <b>위기</b>가 오면 전투가 멈추고 결정 시간이 주어져요.<br>▸ <b>계속 싸운다</b> / <b>전체 후퇴</b> 중에 골라요.<br>▸ 시간 안에 정하지 않으면 계속 싸워요.<br>▸ 체력이 0이 되면 <b>그 즉시 사망</b>해요.', btn: '알겠어요' },
+    { t: '결과를 기다려요', x: '전투가 끝나면 <b>귀환 보고</b>가 도착해요.<br>▸ 기다리는 동안 명부나 장터를 둘러봐도 돼요.<br>▸ 앞으로는 위기 신호가 오면 직접 판단해야 해요.<br>▸ 이번 연습 의뢰는 안전하니 마음 편히 기다려요.', allow: null, done: () => mailCount() >= 1 },
+    { t: '결과를 확인해요', x: '위쪽 <b>귀환 보고</b> 칩을 눌러 <b>확인</b>해요.<br>▸ <b>경험치</b>: 모험가가 성장해요.<br>▸ <b>재료</b>: 장비의 원료가 돼요.<br>▸ <b>명성</b>: 길드를 키워 줘요.<br>▸ 모험가의 <b>등급 점수</b>도 쌓여요.', hl: ['.strip [data-screen="results"]', '[data-act="dismiss"]', '[data-act="dismiss-all"]'], allow: { goto: ['quests', 'results', 'active'], acts: ['dismiss', 'dismiss-all', 'close-modal'] }, done: () => mailCount() === 0 },
+    { card: true, t: '이제 길드를 키워 봐요', x: '의뢰로 <b>명성</b>을 모아 길드를 승급하면 시설과 의뢰가 넓어져요.<br><br>▸ 드롭 재료는 <b>장터 › 보급고</b>에서 사 둬요.<br>▸ <b>대장간</b>에서 장비로 만들어요.<br>▸ <b>진열</b>에 적정가로 올리면 모험가가 사 가요.<br>▸ 몬스터 약점은 <b>도감</b>에 쌓여요.<br><br>모험가를 잃어도 그 이름은 <b>연대기</b>에 남아요. 건투를 빌어요!', btn: '길드 운영 시작', onNext: () => { Guild.state.gold += 100; } },
   ];
   // 마지막 단계를 지난 저장(이전 버전의 버그로 단계만 올라간 경우)은 튜토리얼을 마친 것으로 본다
   const tutStep = () => (Guild.tutorialActive() ? TUT[Math.min(Guild.tutorialStep(), TUT.length - 1)] : null);
@@ -1016,6 +1017,8 @@
     if (a === 'goto') return (al.goto || []).includes(el.dataset.screen);
     return (al.acts || []).includes(a);
   }
+  // 줄 단위로 나눠 보여 주고, ▸ 줄은 내어쓰기로 정렬한다
+  const fmtX = (x) => x.split('<br>').map((l) => (l ? `<div class="ln${l.startsWith('▸') ? ' b' : ''}">${l}</div>` : '<div class="gap"></div>')).join('');
   function coachHtml() {
     const s = tutStep();
     if (!s) return '';
@@ -1025,27 +1028,40 @@
   }
   // 튜토리얼: 대상만 밝게 두고 나머지는 어둡게 (SVG 마스크 구멍). 클릭은 그대로 통과한다.
   let dimSig = '';
+  // 대상 요소와 그 안에서 삐져나온 자식(이름표 등)까지 합친 영역
+  function unionRect(el) {
+    const r = el.getBoundingClientRect();
+    let l = r.left, t = r.top, rt = r.right, bt = r.bottom;
+    el.querySelectorAll('*').forEach((c) => { const q = c.getBoundingClientRect(); if (q.width < 1 || q.height < 1) return; l = Math.min(l, q.left); t = Math.min(t, q.top); rt = Math.max(rt, q.right); bt = Math.max(bt, q.bottom); });
+    return { left: l, top: t, width: rt - l, height: bt - t };
+  }
   function drawDim() {
-    const s = tutStep(), host = $('coach');
+    const s = tutStep();
     let d = document.getElementById('tutdim');
-    if (!s || s.card || !s.hl) { if (d) d.remove(); dimSig = ''; return; }
+    const hl = s && !s.card && s.hl ? (typeof s.hl === 'function' ? s.hl() : s.hl) : null;
+    if (!hl) { if (d) d.remove(); dimSig = ''; return; }
     const st = $('stage').getBoundingClientRect(), k = st.width / 1760;
     const rs = [];
-    s.hl.forEach((q) => document.querySelectorAll(q).forEach((el) => {
-      const r = el.getBoundingClientRect();
+    hl.forEach((q) => document.querySelectorAll(q).forEach((el) => {
+      const r = unionRect(el);
       if (r.width < 2 || r.height < 2) return;
       rs.push({ x: (r.left - st.left) / k - 6, y: (r.top - st.top) / k - 6, w: r.width / k + 12, h: r.height / k + 12 });
     }));
     const sig = rs.map((r) => [r.x, r.y, r.w, r.h].map(Math.round).join(',')).join('|');
     if (d && sig === dimSig) return;
     dimSig = sig;
+    if (d && d.querySelectorAll('.td-ring').length === rs.length) { // 같은 개수면 위치만 갱신 (깜빡임 방지)
+      const holes = d.querySelectorAll('#tdm rect:not(:first-child)'), rings = d.querySelectorAll('.td-ring');
+      rs.forEach((r, i) => [holes[i], rings[i]].forEach((e) => { e.setAttribute('x', r.x); e.setAttribute('y', r.y); e.setAttribute('width', r.w); e.setAttribute('height', r.h); }));
+      return;
+    }
     const holes = rs.map((r) => `<rect x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" rx="10" fill="#000"/>`).join('');
     const rings = rs.map((r) => `<rect class="td-ring" x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" rx="10"/>`).join('');
-    const html = `<svg viewBox="0 0 1760 990" preserveAspectRatio="none"><defs><mask id="tdm"><rect width="1760" height="990" fill="#fff"/>${holes}</mask></defs><rect width="1760" height="990" fill="rgba(3,5,12,.72)" mask="url(#tdm)"/>${rings}</svg>`;
-    if (!d) { d = document.createElement('div'); d.id = 'tutdim'; host.insertBefore(d, host.firstChild); }
+    const html = `<svg viewBox="0 0 1760 990" preserveAspectRatio="none"><defs><mask id="tdm"><rect width="1760" height="990" fill="#fff"/>${holes}</mask></defs><rect width="1760" height="990" fill="rgba(3,5,12,.74)" mask="url(#tdm)"/>${rings}</svg>`;
+    if (!d) { d = document.createElement('div'); d.id = 'tutdim'; $('stage').insertBefore(d, $('coach')); }
     d.innerHTML = html;
   }
-  function tutHighlight() { dimSig = ''; drawDim(); }
+  function tutHighlight() { drawDim(); }
   setInterval(drawDim, 300);
   window.addEventListener('resize', () => { dimSig = ''; drawDim(); });
   function coachHtml() {
@@ -1053,35 +1069,50 @@
     if (!s) return '';
     const n = Guild.tutorialStep() + 1, total = TUT.length, fresh = U.tutShown !== n;
     const cls = fresh ? ' coach-in' : '';
-    if (s.card) return `<div class="coach-scrim"><div class="coach-card${cls}"><div class="cstep">튜토리얼 ${n} / ${total}</div><h2>${s.t}</h2><p class="coach-x">${s.x}</p><button class="btn coach-btn" data-act="coach-next">${s.btn}</button></div></div>`;
-    return `<div class="coach-bar${cls}"${s.at ? ` style="top:${s.at}px"` : ''}><div class="cb-top"><span class="cstep">튜토리얼 ${n} / ${total}</span><b>${s.t}</b>${s.next ? '<button class="btn sm coach-btn" data-act="coach-next">다음 ▶</button>' : ''}</div><div class="coach-x">${s.x}</div></div>`;
+    if (s.card) return `<div class="coach-scrim"><div class="coach-card${cls}"><div class="cstep">튜토리얼 ${n} / ${total}</div><h2>${s.t}</h2><p class="coach-x">${fmtX(s.x)}</p><button class="btn coach-btn" data-act="coach-next">${s.btn}</button></div></div>`;
+    return `<div class="coach-bar${cls}"${s.at ? ` style="top:${s.at}px"` : ''}><div class="cb-top"><span class="cstep">튜토리얼 ${n} / ${total}</span><b>${s.t}</b>${s.next ? '<button class="btn sm coach-btn" data-act="coach-next">다음 ▶</button>' : ''}</div><div class="coach-x">${fmtX(s.x)}</div>${s.next ? '<div class="hint">버튼이나 화면의 빈 곳을 눌러도 넘어가요</div>' : ''}</div>`;
   }
   // 설명 글자가 한 글자씩 튀어나오는 연출. 단계가 바뀔 때만 재생한다.
   let typeTimer = null, typeDone = null;
   function finishType() { if (typeDone) typeDone(); }
+  // 글자가 채워지는 연출. 아직 안 나온 글자는 보이지 않을 뿐 자리는 차지해서 상자 크기가 변하지 않는다.
+  function typeFill(root, perTick, ms, onEnd) {
+    const nodes = [], w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    while (w.nextNode()) nodes.push(w.currentNode);
+    const parts = nodes.map((n) => {
+      const t = n.nodeValue, a = document.createElement('span'), b = document.createElement('span');
+      b.style.visibility = 'hidden'; b.textContent = t; n.parentNode.replaceChild(a, n); a.after(b);
+      return { a, b, t };
+    });
+    const total = parts.reduce((x, o) => x + o.t.length, 0);
+    let shown = 0, timer = null, ended = false;
+    const paint = () => { let left = shown; parts.forEach((o) => { const take = Math.max(0, Math.min(o.t.length, left)); o.a.textContent = o.t.slice(0, take); o.b.textContent = o.t.slice(take); left -= take; }); };
+    const finish = () => { if (ended) return; ended = true; clearInterval(timer); shown = total; paint(); root.classList.remove('typing'); if (onEnd) onEnd(); };
+    paint(); root.classList.add('typing');
+    timer = setInterval(() => { shown += perTick; paint(); if (shown >= total) finish(); }, ms);
+    return finish;
+  }
   function tutType() {
     const n = Guild.tutorialStep() + 1;
     if (!Guild.tutorialActive() || U.tutShown === n) return;
     U.tutShown = n;
+    typeDone = null;
     const host = document.querySelector('#coach .coach-x');
-    clearInterval(typeTimer); typeDone = null;
     if (!host) return;
-    const nodes = [], w = document.createTreeWalker(host, NodeFilter.SHOW_TEXT);
-    while (w.nextNode()) nodes.push({ n: w.currentNode, t: w.currentNode.nodeValue });
-    nodes.forEach((o) => { o.n.nodeValue = ''; });
     const btn = document.querySelector('#coach .coach-btn'); if (btn) btn.classList.add('wait');
-    const total = nodes.reduce((a, o) => a + o.t.length, 0);
-    let shown = 0;
-    const paint = () => { let left = shown; nodes.forEach((o) => { const take = Math.max(0, Math.min(o.t.length, left)); o.n.nodeValue = o.t.slice(0, take); left -= take; }); };
-    typeDone = () => { clearInterval(typeTimer); typeDone = null; shown = total; paint(); host.classList.remove('typing'); if (btn) btn.classList.remove('wait'); };
-    host.classList.add('typing');
-    typeTimer = setInterval(() => { shown += 2; paint(); if (shown >= total) typeDone(); }, 22);
+    typeDone = typeFill(host, 2, 22, () => { typeDone = null; if (btn) btn.classList.remove('wait'); });
   }
-  function tutHighlight() {
-    document.querySelectorAll('.tut-hl').forEach((el) => el.classList.remove('tut-hl'));
-    const s = tutStep();
-    if (!s || s.card || !s.hl) return;
-    s.hl.forEach((q) => document.querySelectorAll(q).forEach((el) => el.classList.add('tut-hl')));
+  // 영입 면접: 새 대사와 메모 줄이 한 글자씩 채워진다
+  let recDone = null;
+  function recType() {
+    const key = U.applicant + ':' + (U.recLine || 0);
+    if (!U.applicant || U.recTyped === key) return;
+    U.recTyped = key;
+    const tx = document.querySelector('.rcp-dlg .tx'), cur = document.querySelector('.rcp-memo p.cur');
+    if (!tx) return;
+    const f1 = typeFill(tx, 1, 28), f2 = cur ? typeFill(cur, 1, 28) : null;
+    recDone = () => { f1(); if (f2) f2(); recDone = null; };
+    const t = setInterval(() => { if (!tx.classList.contains('typing')) { clearInterval(t); recDone = null; } }, 60);
   }
 
   let lastSig = '';
@@ -1116,6 +1147,7 @@
     $('coach').innerHTML = coachHtml();
     tutHighlight();
     tutType();
+    recType();
     document.querySelectorAll('[data-keep]').forEach((el) => { if (keep[el.dataset.keep] != null) el.scrollTop = keep[el.dataset.keep]; });
     { const cl = document.querySelector('.chat-log'); if (cl) cl.scrollTop = cl.scrollHeight; }
     const first = $('overlay').querySelector('.btn:not(.ghost), .btn');
@@ -1282,7 +1314,7 @@
       case 'confirm-yes': { const f = U.modal && U.modal.onYes; U.modal = null; if (f) f(); break; }
       case 'return-char': { const r = Guild.returnCharacter(id); toast(r.ok ? '길드로 돌아왔어요.' : r.reason); break; }
       case 'app-sel': U.applicant = id; break;
-      case 'rec-next': U.recLine = (U.recLine || 0) + 1; break;
+      case 'rec-next': if (recDone) { recDone(); break; } U.recLine = (U.recLine || 0) + 1; break;
       case 'app-dismiss': Guild.dismissApplicant(id); toast('지원자를 돌려보냈어요.'); break;
       case 'hire': {
         const r = Guild.hire(id);
@@ -1374,7 +1406,11 @@
   }, true);
   $('stage').addEventListener('click', (e) => {
     const el = e.target.closest('[data-act]');
-    if (!el) return;
+    if (!el) { // 튜토리얼 설명 단계: 화면의 빈 곳을 눌러도 넘어간다
+      const ts = tutStep();
+      if (ts && ts.next && !e.target.closest('button, a, input, select, textarea, [role="button"]')) act('coach-next', { dataset: {} });
+      return;
+    }
     if (el.dataset.act === 'scrim') { if (e.target === el) { U.modal = null; render(); } return; }
     if (el.tagName === 'INPUT') return; // 체크박스는 change에서 처리
     if (!tutAllowed(el)) { toast('튜토리얼 안내를 먼저 따라 해 주세요.'); return; }

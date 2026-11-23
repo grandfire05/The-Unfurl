@@ -1512,7 +1512,7 @@
         const doHire = () => { const r = Guild.hire(id); if (!r.ok) { toast(r.reason); } else { U.modal = { type: 'recruit', id: r.character.id }; } };
         if (Server.isIn()) { // 외모가 서버 전체에서 하나뿐이도록, 채용 전에 서버에 등록한다
           U.hiring = true;
-          Server.reserveAppearance(id).then(() => { U.hiring = false; doHire(); render(); });
+          Promise.race([Promise.resolve().then(() => Server.reserveAppearance(id)), new Promise((r) => setTimeout(r, 4000))]).catch(() => {}).then(() => { U.hiring = false; try { doHire(); } catch (er) { toast('채용 중 문제가 생겼어요. 다시 눌러 주세요.'); } render(); }); // 서버가 느리거나 막혀도 4초 뒤엔 그대로 진행한다
           break;
         }
         doHire();

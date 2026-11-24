@@ -1,0 +1,10 @@
+<!-- Supabase 대시보드 → Authentication → Emails → Templates → "Confirm sign up"
+     Subject(제목): [모험가 길드] 이메일 인증 번호 {{ .Token }}
+     Message body(본문): 아래 내용을 통째로 붙여넣기. 링크 대신 {{ .Token }} 이 인증 번호로 바뀐다. -->
+<div style="max-width:480px;margin:0 auto;padding:32px 28px;background:#141828;color:#e6e9f5;font-family:'Malgun Gothic',Arial,sans-serif;border-radius:16px">
+  <div style="font-size:26px;font-weight:900;color:#e8c15a;text-align:center;letter-spacing:.04em">모험가 길드</div>
+  <p style="text-align:center;color:#9aa1bd;font-size:13px;margin:6px 0 26px">모험가를 모으고, 키우고, 떠나보내는 이야기</p>
+  <p style="font-size:15px;line-height:1.7;margin:0 0 18px">길드에 오신 걸 환영해요!<br>아래 <b>인증 번호</b>를 게임 화면에 입력하면 가입이 끝나요.</p>
+  <div style="text-align:center;font-size:36px;font-weight:900;letter-spacing:.35em;color:#2a2208;background:linear-gradient(#e8c15a,#c79a32);border-radius:12px;padding:16px 0 16px .35em">{{ .Token }}</div>
+  <p style="font-size:12.5px;color:#9aa1bd;line-height:1.7;margin:22px 0 0">인증 번호는 잠시 뒤 만료돼요. 직접 가입하신 게 아니라면 이 메일은 무시해 주세요.</p>
+</div>
